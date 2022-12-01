@@ -21,13 +21,9 @@ namespace Project2
             KeyColor= Color.White;  
         }
 
-        public void Draw(SpriteBatch spriteBatch, Texture2D keyTexture, int screenWidth, int screenHeight)
+        public void Draw(SpriteBatch spriteBatch, Texture2D keyTexture, Rectangle keyArea)
         {
-            int keyWidth = screenWidth / 7;
-            int keyHeight = screenHeight / 3;
-            int keyX = keyWidth * Id;
-            int keyY = (screenHeight /3)*2;
-            KeyArea = new Rectangle(keyX, keyY, keyWidth, keyHeight);
+            KeyArea = keyArea;
             spriteBatch.Draw(keyTexture, KeyArea, KeyColor);
         }
     }

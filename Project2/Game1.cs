@@ -45,7 +45,7 @@ namespace Project2
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            piano.KeyTexture = Content.Load<Texture2D>("rectangle");
+            piano.KeyTexture = Content.Load<Texture2D>("white");
 
         }
 
