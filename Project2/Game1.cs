@@ -1,10 +1,9 @@
-﻿using Java.IO;
+﻿using Android.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Android.Util;
-using System;
 using Microsoft.Xna.Framework.Input.Touch;
+using System;
 
 
 
@@ -45,7 +44,8 @@ namespace Project2
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            piano.KeyTexture = Content.Load<Texture2D>("white");
+            piano.WhiteKeyTexture = Content.Load<Texture2D>("white");
+            piano.BlackKeyTexture = Content.Load<Texture2D>("white");
 
         }
 
@@ -63,19 +63,20 @@ namespace Project2
                     Log.Debug("swag", "screen touched!");
                     var x = touch.Position.X;
                     var y = touch.Position.Y;
-                    foreach(Key key in piano.Keys)
+                    foreach (Key key in piano.Keys)
                     {
                         if (key.KeyArea.Contains(x, y))
                         {
                             Log.Debug("swag", "button touched!");
-                            if(key.KeyColor == Color.White)
+                            if (key.Mask == Color.White)
                             {
-                                key.KeyColor = Color.Tomato;
+                                key.Mask = Color.Tomato;
                             }
                             else
                             {
-                                key.KeyColor = Color.White;
+                                key.Mask = Color.White;
                             }
+                            break;
                             //ClearButton.AnAction(ClearButton, new ButtonClickedEventArgs() { Id = ClearButton.Id });
                         }
                     }

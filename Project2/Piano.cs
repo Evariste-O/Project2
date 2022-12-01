@@ -1,32 +1,35 @@
-﻿using Android.Icu.Number;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Android.Resource;
 
 namespace Project2
 {
     internal class Piano
     {
         public Key[] Keys { get; set; }
-        public Texture2D KeyTexture { get; set; }
+        public Texture2D BlackKeyTexture { get; set; }
+        public Texture2D WhiteKeyTexture { get; set; }
 
-        public Piano() 
+        public Piano()
         {
-            int pianoLength = 15;
             Keys = new Key[12];
-            for (int i = 0; i < 12; i++)
-            {
-                Keys[i] = new Key(i);
-            }
+            Keys[0] = new Key(0, KeyValue.cis);
+            Keys[1] = new Key(1, KeyValue.dis);
+            Keys[2] = new Key(2, KeyValue.fis);
+            Keys[3] = new Key(3, KeyValue.gis);
+            Keys[4] = new Key(4, KeyValue.ais);
+            Keys[5] = new Key(5, KeyValue.c);
+            Keys[6] = new Key(6, KeyValue.d);
+            Keys[7] = new Key(7, KeyValue.e);
+            Keys[8] = new Key(8, KeyValue.f);
+            Keys[9] = new Key(9, KeyValue.g);
+            Keys[10] = new Key(10, KeyValue.a);
+            Keys[11] = new Key(11, KeyValue.h);
+
         }
 
         public void Draw(SpriteBatch spriteBatch, int screenWidth, int screenHeight)
         {
+
             int whiteKeyCounter = 0;
 
             int keyX;
@@ -38,24 +41,19 @@ namespace Project2
             int blackKeyWidth = whiteKeyWidth / 2;
             int blackKeyHeight = (whiteKeyHeight / 3) * 2;
 
-            int[] blackKeys = { 1, 3, 6, 8, 10 };
-
-            for(int i = 0; i < 12; i++)
+            for (int i = 5; i < 12; i++)
             {
-                if(!blackKeys.Contains(Keys[i].Id))
-                {
-                    keyX = whiteKeyWidth * whiteKeyCounter;
-                    Keys[i].Draw(spriteBatch, KeyTexture, new Rectangle(keyX, keyY, whiteKeyWidth, whiteKeyHeight));
-                    whiteKeyCounter++;
-                }
+                keyX = whiteKeyWidth * whiteKeyCounter;
+                Keys[i].Draw(spriteBatch, WhiteKeyTexture, new Rectangle(keyX, keyY, whiteKeyWidth, whiteKeyHeight));
+                whiteKeyCounter++;
             }
-            for (int i = 0; i < 12; i++)
+
+            keyX = whiteKeyWidth - blackKeyWidth / 2;
+
+            for (int i = 0; i < 5; i++)
             {
-                if (blackKeys.Contains(Keys[i].Id))
-                {
-                    keyX = Keys[i - 1].KeyArea.Right - whiteKeyWidth / 4;
-                    Keys[i].Draw(spriteBatch, KeyTexture, new Rectangle(keyX, keyY, blackKeyWidth, blackKeyHeight));
-                }
+                Keys[i].Draw(spriteBatch, BlackKeyTexture, new Rectangle(keyX, keyY, blackKeyWidth, blackKeyHeight));
+                keyX += i == 2 ? whiteKeyWidth * 2 : whiteKeyWidth;
             }
         }
     }
