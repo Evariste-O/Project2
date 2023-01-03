@@ -1,4 +1,4 @@
-﻿namespace Project2;
+﻿namespace Project2.Enums;
 
 public enum KeyValue
 {

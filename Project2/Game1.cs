@@ -1,14 +1,16 @@
 ﻿using Android.Util;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using Project2.Enums;
 using System;
-
-
+using System.Diagnostics;
+using System.Linq;
 
 namespace Project2
-{
+{ 
     public class ButtonClickedEventArgs : EventArgs
     {
         public int Id { get; set; }
@@ -16,6 +18,12 @@ namespace Project2
     public class Game1 : Game
     {
         Piano piano;
+        NoteWindow noteWindow;
+        Menu menu;
+
+        Stopwatch stopwatch= new Stopwatch();
+        int errors = 0;
+        bool isRunning = false;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -35,6 +43,9 @@ namespace Project2
 
             // TODO: Add your initialization logic here
             piano = new Piano();
+            noteWindow = new NoteWindow();
+            menu = new Menu();
+            stopwatch.Start();
 
             base.Initialize();
         }
@@ -45,39 +56,61 @@ namespace Project2
 
             // TODO: use this.Content to load your game content here
             piano.WhiteKeyTexture = Content.Load<Texture2D>("white");
-            piano.BlackKeyTexture = Content.Load<Texture2D>("white");
+            piano.BlackKeyTexture = Content.Load<Texture2D>("black");
+            noteWindow.Lines = Content.Load<Texture2D>("symbols");
+            menu.PlayButtonTexture = Content.Load<Texture2D>("playButton");
 
         }
 
-        protected override void Update(GameTime gameTime)
+        protected async override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             // TODO: Add your update logic here
-            var touchState = TouchPanel.GetState();
-            foreach (var touch in touchState)
+            if (isRunning)
             {
-                if (touch.State == TouchLocationState.Pressed)
+                if (stopwatch.ElapsedMilliseconds > 1000) 
+                { 
+                    noteWindow.AddNote(Content);
+                    stopwatch.Restart();
+                }
+                noteWindow.Update(gameTime);
+
+                var touchState = TouchPanel.GetState();
+                foreach (var touch in touchState)
                 {
-                    Log.Debug("swag", "screen touched!");
-                    var x = touch.Position.X;
-                    var y = touch.Position.Y;
-                    foreach (Key key in piano.Keys)
+                    if (touch.State == TouchLocationState.Pressed)
                     {
-                        if (key.KeyArea.Contains(x, y))
+                        var x = touch.Position.X;
+                        var y = touch.Position.Y;
+                        foreach (Key key in piano.Keys)
                         {
-                            Log.Debug("swag", "button touched!");
-                            if (key.Mask == Color.White)
+                            if (key.KeyArea.Contains(x, y))
                             {
-                                key.Mask = Color.Tomato;
+                                var noteToSolve = noteWindow.Notes.FirstOrDefault(note => note.Active);
+                                if (noteWindow.Notes.Any() && noteToSolve is not null && key.KeyValue == noteToSolve.Value)
+                                {
+                                    noteToSolve.Active = false;
+                                }
+                                else 
+                                {
+
+                                }
                             }
-                            else
-                            {
-                                key.Mask = Color.White;
-                            }
-                            break;
-                            //ClearButton.AnAction(ClearButton, new ButtonClickedEventArgs() { Id = ClearButton.Id });
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var touchState = TouchPanel.GetState();
+                foreach (var touch in touchState)
+                {
+                    if (touch.State == TouchLocationState.Pressed)
+                    {
+                        var x = touch.Position.X;
+                        var y = touch.Position.Y;
+                        if (menu.PLayButton.Contains(x, y))
+                        {
+                            isRunning= true;
                         }
                     }
                 }
@@ -92,7 +125,15 @@ namespace Project2
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            piano.Draw(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            if (isRunning)
+            {
+                piano.Draw(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+                noteWindow.Draw(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            }
+            else
+            {
+                menu.Draw(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
