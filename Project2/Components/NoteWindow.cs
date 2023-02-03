@@ -10,28 +10,35 @@ using System.Text;
 using System.Threading.Tasks;
 using static Android.Provider.ContactsContract.CommonDataKinds;
 using Microsoft.Xna.Framework.Content;
+using Android.Graphics.Fonts;
 
-namespace Project2
+namespace Project2.Components
 {
     internal class NoteWindow
     {
         public List<Note> Notes { get; set; }
         public Texture2D Lines { get; set; }
-        public int NoteCount { get; set; }
+        SpriteFont SpriteFont { get; set; }
+        public int Lives { get; set; }
 
-        public NoteWindow()
+        public NoteWindow(ContentManager content)
         {
             Notes = new List<Note>();
-            NoteCount = 0;
+            Lives = 3;
+            SpriteFont = content.Load<SpriteFont>("Font");
         }
 
-        public void Update(GameTime gameTime) 
+        public void Update(GameTime gameTime)
         {
             MoveNotes(200 * gameTime.ElapsedGameTime.TotalSeconds);
             if (Notes.FirstOrDefault(note => note.SpriteArea.Top == 694) is null) AdjustFirstActiveSprite();
             foreach (var note in Notes)
             {
                 note.Update();
+                if(note.NoteArea.Left < -90)
+                {
+                    Lives--;
+                }
             }
             Notes.RemoveAll(note => note.NoteArea.Left < -90 || note.NoteColor.A < 10);
         }
@@ -48,14 +55,15 @@ namespace Project2
         public void Draw(SpriteBatch spriteBatch, int screenWidth, int screenHeight)
         {
             //draw the lines
-            spriteBatch.Draw(Lines, new Rectangle(0, 0, screenWidth, 694),new Rectangle(300,0,300,694), Color.White);
-            spriteBatch.Draw(Lines, new Rectangle(0, 694 ,screenWidth, 694), new Rectangle(300, 0, 300, 694), Color.White);
+            spriteBatch.Draw(Lines, new Rectangle(0, 0, screenWidth, 694), new Rectangle(300, 0, 300, 694), Color.White);
+            spriteBatch.Draw(Lines, new Rectangle(0, 694, screenWidth, 694), new Rectangle(300, 0, 300, 694), Color.White);
 
             //draw the notes
             foreach (var note in Notes)
             {
                 note.Draw(spriteBatch);
             }
+            spriteBatch.DrawString(SpriteFont, "Lives:" + Lives.ToString(), new Vector2(100, 0), Color.White);
         }
 
         public void MoveNotes(double speed)
@@ -63,7 +71,7 @@ namespace Project2
             foreach (var note in Notes)
             {
                 Rectangle area = note.NoteArea;
-                area.Offset((int)-speed,0);
+                area.Offset((int)-speed, 0);
                 note.NoteArea = area;
             }
         }
@@ -71,7 +79,6 @@ namespace Project2
         public void AddNote(ContentManager content)
         {
             Notes.Add(new Note(content));
-            NoteCount++;
         }
     }
 }

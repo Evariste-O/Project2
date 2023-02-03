@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Project2.Enums;
 
-namespace Project2
+namespace Project2.Components
 {
     internal class Key
     {

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Project2.Enums;
 
-namespace Project2
+namespace Project2.Components
 {
     internal class Piano
     {
@@ -33,15 +33,15 @@ namespace Project2
         {
 
             int whiteKeyCounter = 0;
-            
+
             int keyX;
-            int keyY = (screenHeight / 3) * 2;
+            int keyY = screenHeight / 3 * 2;
 
             int whiteKeyWidth = screenWidth / 7;
             int whiteKeyHeight = screenHeight / 3;
-            
+
             int blackKeyWidth = whiteKeyWidth / 2;
-            int blackKeyHeight = (whiteKeyHeight / 3) * 2;
+            int blackKeyHeight = whiteKeyHeight / 3 * 2;
 
             for (int i = 5; i < 12; i++)
             {

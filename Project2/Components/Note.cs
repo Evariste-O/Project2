@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Android.Provider.ContactsContract.CommonDataKinds;
 
-namespace Project2
+namespace Project2.Components
 {
     internal class Note
     {
@@ -23,15 +23,15 @@ namespace Project2
         public Color NoteColor { get; set; } = Color.White;
         public Texture2D NoteTexture { get; set; }
         public bool Active { get; set; }
-        
+
         public Note(ContentManager content)
         {
             Active = true;
             Value = new KeyValue();
             Clef = new Random().Next(2) == 0 ? Clef.treble : Clef.bass;
-            NoteArea = new Rectangle(1200, Clef == Clef.treble? 0 : 694 , 124, 694);
-            Index = new Random().Next(10,15);
-            SpriteArea = new Rectangle(0 + (125 * Index), 0, 125, 694);
+            NoteArea = new Rectangle(1200, Clef == Clef.treble ? 0 : 694, 124, 694);
+            Index = new Random().Next(4, 20);
+            SpriteArea = new Rectangle(0 + 125 * Index, 0, 125, 694);
             NoteTexture = content.Load<Texture2D>("notes");
             switch (Index)
             {
@@ -39,7 +39,7 @@ namespace Project2
                 case 7:
                 case 14:
                 case 21:
-                    Value = Clef == Clef.bass? KeyValue.f : KeyValue.d; break;
+                    Value = Clef == Clef.bass ? KeyValue.f : KeyValue.d; break;
                 case 1:
                 case 8:
                 case 15:
