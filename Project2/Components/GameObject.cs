@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.IO.IsolatedStorage;
 using System.Xml.Linq;
 using System.IO;
+using Xamarin.Essentials;
 
 namespace Project2.Components
 {
@@ -20,12 +21,16 @@ namespace Project2.Components
         public bool IsInitialized { get; private set; }
         public Piano Piano { get; set; }
         public NoteWindow NoteWindow { get; set; }
+        public int HighScore { get; set; }
 
         readonly Stopwatch stopwatch = new();
         readonly Stopwatch score = new();
+        HighScoreDataStore _highScores;
 
         public GameObject(ContentManager content) 
         {
+            _highScores = new HighScoreDataStore();
+            SetHighScore();
             Content = content;
             NoteWindow = new NoteWindow(content);
             Piano = new Piano();
@@ -33,6 +38,7 @@ namespace Project2.Components
 
         public void Initialize()
         {
+
             stopwatch.Restart();
             score.Restart();
             IsInitialized= true;
@@ -65,15 +71,21 @@ namespace Project2.Components
                             }
                             else
                             {
+                                Vibration.Vibrate(TimeSpan.FromSeconds(0.1));
                                 NoteWindow.Lives--;
-                                
+                                break;
                             }
                         }
                     }
                 }
             }
-            if (NoteWindow.Lives < 0)
+            if (NoteWindow.Lives < 1)
             {
+                if ((int)(score.ElapsedMilliseconds / 100) > HighScore)
+                {
+                    HighScore = (int)(score.ElapsedMilliseconds / 100);
+                    SaveHighScore();
+                }
                 NoteWindow.Lives = 3;
                 NoteWindow.Notes.Clear();
                 IsInitialized = false;
@@ -82,11 +94,42 @@ namespace Project2.Components
             return true;   
         }
 
-        public void Draw(SpriteBatch spriteBatch, int screenWidth, int screenHeight)
+        public async Task<bool> SaveHighScore()
+        {
+            try
+            {
+                if (HighScore == 0)
+                {
+                    await _highScores.AddAsync(new HighScore() { Id = 0, Score = (int)(score.ElapsedMilliseconds / 100) });
+                }
+                else
+                {
+                    await _highScores.UpdateAsync(new HighScore() {  Id = 0, Score = (int)(score.ElapsedMilliseconds / 100) });
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public async void Draw(SpriteBatch spriteBatch, int screenWidth, int screenHeight)
         {
             Piano.Draw(spriteBatch, screenWidth, screenHeight);
             NoteWindow.Draw(spriteBatch, screenWidth, screenHeight);
-            spriteBatch.DrawString(Content.Load<SpriteFont>("Font"), "Score: " + (score.ElapsedMilliseconds/100).ToString(), new Vector2(600, 0), Color.White);
+            spriteBatch.DrawString(Content.Load<SpriteFont>("Font"), (score.ElapsedMilliseconds/100).ToString(), new Vector2(510, 1400), Color.Black);
+            spriteBatch.DrawString(Content.Load<SpriteFont>("Font"), HighScore.ToString(), new Vector2(510, 600), Color.Black);
+        }
+
+        private async void SetHighScore()
+        {
+
+            List<HighScore> scores = await _highScores.GetAsync(false);
+            if (scores.Count > 0)
+                HighScore = scores[0].Score;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Project2.Components
             Value = new KeyValue();
             Clef = new Random().Next(2) == 0 ? Clef.treble : Clef.bass;
             NoteArea = new Rectangle(1200, Clef == Clef.treble ? 0 : 694, 124, 694);
-            Index = new Random().Next(4, 20);
+            Index = new Random().Next(0, 24);
             SpriteArea = new Rectangle(0 + 125 * Index, 0, 125, 694);
             NoteTexture = content.Load<Texture2D>("notes");
             switch (Index)

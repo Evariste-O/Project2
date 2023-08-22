@@ -39,9 +39,8 @@ namespace Project2
             _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             _graphics.ApplyChanges();
 
-            // TODO: Add your initialization logic here
             gameObject = new(Content);
-            menu = new Menu();
+            menu = new Menu(Content);
             stopwatch.Start();
 
             base.Initialize();
@@ -55,7 +54,8 @@ namespace Project2
             gameObject.Piano.WhiteKeyTexture = Content.Load<Texture2D>("white");
             gameObject.Piano.BlackKeyTexture = Content.Load<Texture2D>("black");
             gameObject.NoteWindow.Lines = Content.Load<Texture2D>("symbols");
-            menu.PlayButtonTexture = Content.Load<Texture2D>("playButton");
+            gameObject.NoteWindow.Symbol = Content.Load<Texture2D>("symbols");
+            menu.PlayButtonTexture = Content.Load<Texture2D>("play-button");
         }
 
         protected override void Update(GameTime gameTime)
@@ -75,7 +75,7 @@ namespace Project2
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
 
             _spriteBatch.Begin();
             if (isRunning)
@@ -84,7 +84,7 @@ namespace Project2
             }
             else
             {
-                menu.Draw(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+                menu.Draw(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, gameObject.HighScore);
             }
             _spriteBatch.End();
 

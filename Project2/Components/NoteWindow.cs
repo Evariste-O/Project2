@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using static Android.Provider.ContactsContract.CommonDataKinds;
 using Microsoft.Xna.Framework.Content;
 using Android.Graphics.Fonts;
+using Xamarin.Essentials;
 
 namespace Project2.Components
 {
@@ -18,6 +19,7 @@ namespace Project2.Components
     {
         public List<Note> Notes { get; set; }
         public Texture2D Lines { get; set; }
+        public Texture2D Symbol { get; set; }
         SpriteFont SpriteFont { get; set; }
         public int Lives { get; set; }
 
@@ -35,12 +37,14 @@ namespace Project2.Components
             foreach (var note in Notes)
             {
                 note.Update();
-                if(note.NoteArea.Left < -90)
+                if(note.NoteArea.Left < 170 && note.Active)
                 {
+                    Vibration.Vibrate(TimeSpan.FromSeconds(0.1));
                     Lives--;
+                    note.Active = false;
                 }
             }
-            Notes.RemoveAll(note => note.NoteArea.Left < -90 || note.NoteColor.A < 10);
+            Notes.RemoveAll(note => note.NoteColor.A < 10);
         }
 
         private void AdjustFirstActiveSprite()
@@ -58,12 +62,18 @@ namespace Project2.Components
             spriteBatch.Draw(Lines, new Rectangle(0, 0, screenWidth, 694), new Rectangle(300, 0, 300, 694), Color.White);
             spriteBatch.Draw(Lines, new Rectangle(0, 694, screenWidth, 694), new Rectangle(300, 0, 300, 694), Color.White);
 
+            //draw the symbols
+            spriteBatch.Draw(Lines, new Rectangle(30, 0, 110, 694), new Rectangle(0, 0, 110, 694), Color.White);
+            spriteBatch.Draw(Lines, new Rectangle(30, 694, 132, 694), new Rectangle(147, 0, 132, 694), Color.White);
+
             //draw the notes
             foreach (var note in Notes)
             {
                 note.Draw(spriteBatch);
             }
-            spriteBatch.DrawString(SpriteFont, "Lives:" + Lives.ToString(), new Vector2(100, 0), Color.White);
+
+            //draw the lives
+            spriteBatch.DrawString(SpriteFont, "Lives:" + Lives.ToString(), new Vector2(30, 0), Color.Black);
         }
 
         public void MoveNotes(double speed)
